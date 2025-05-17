@@ -1,50 +1,77 @@
 const mongodb = require('../data/database');
 const ObjectId = require('mongodb').ObjectId;
 
-// Obtener todos los contactos
 const getAll = async (req, res) => {
-    const result = await mongodb.getDatabase().db().collection('contacts').find();
-    result.toArray().then((contacts) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(contacts);
-    });
+  //#swagger.tags=['Contacts']
+  const result = await mongodb.getDatabase().db().collection('contacts').find();
+  result.toArray().then((contacts) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(contacts);
+  });
 };
-
-// Obtener un solo contacto por ID
 const getSingle = async (req, res) => {
-    const userId = new ObjectId(req.params.id);
-    const result = await mongodb.getDatabase().db().collection('contacts').find({ _id: userId });
-    result.toArray().then((contacts) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(contacts[0]);
-    });
+  //#swagger.tags=['Contacts']
+  const userId = new ObjectId(req.params.id);
+  const result = await mongodb.getDatabase().db().collection('contacts').find({ _id: userId });
+  result.toArray().then((contacts) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(contacts[0]);
+  });
 };
 
-// Crear un nuevo contacto
-const createContact = async (req, res) => {
-    const { firstName, lastName, email, favoriteColor, birthday } = req.body;
-
-    // Verificar que todos los campos necesarios estén presentes
-    if (!firstName || !lastName || !email || !favoriteColor || !birthday) {
-        return res.status(400).send('Faltan datos requeridos');
-    }
-
-    // Crear el nuevo contacto
-    const newContact = {
-        firstName,
-        lastName,
-        email,
-        favoriteColor,
-        birthday: new Date(birthday)  // Asegúrate de que birthday sea una fecha válida
-    };
-
-    try {
-        const result = await mongodb.getDatabase().db().collection('contacts').insertOne(newContact);
-        res.status(201).json({ message: 'Contacto creado exitosamente', contactId: result.insertedId });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al insertar el contacto');
-    }
+// function to create a new user
+const createUser = async (req, res) => {
+  //#swagger.tags=['Contacts']
+  const user = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    favoriteColor: req.body.favoriteColor,
+    birthday: req.body.birthday
+  };
+  const response = await mongodb.getDatabase().db().collection('contacts').insertOne(user);
+  if (response.acknowledged) {
+    res.status(200).send();
+  } else {
+    res.status(500).json(response.error || 'Some error occurred while creating the user');
+  }
 };
 
-module.exports = { getAll, getSingle, createContact };
+const updateUser = async (req, res) => {
+  //#swagger.tags=['Contacts']
+  const userId = new ObjectId(req.params.id);
+  const user = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    favoriteColor: req.body.favoriteColor,
+    birthday: req.body.birthday
+  };
+  const response = await mongodb
+    .getDatabase()
+    .db()
+    .collection('contacts')
+    .replaceOne({ _id: userId }, user);
+  if (response.modifiedCount > 0) {
+    res.status(200).send();
+  } else {
+    res.status(500).json(response.error || 'Some error occurred while creating the user');
+  }
+};
+
+const deleteUser = async (req, res) => {
+  //#swagger.tags=['Contacts']
+  const userId = new ObjectId(req.params.id);
+  const response = await mongodb
+    .getDatabase()
+    .db()
+    .collection('contacts')
+    .deleteOne({ _id: userId });
+  if (response.deletedCount > 0) {
+    res.status(200).send();
+  } else {
+    res.status(500).json(response.error || 'Some error occured while deleting the user.');
+  }
+};
+
+module.exports = { getAll, getSingle, createUser, updateUser, deleteUser };

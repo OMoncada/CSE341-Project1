@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-
 const contactsController = require('../controllers/contacts');
 
-// Ruta para obtener todos los contactos
+// Get data from database
 router.get('/', contactsController.getAll);
-
-// Ruta para obtener un contacto específico por ID
 router.get('/:id', contactsController.getSingle);
 
-// Ruta para crear un nuevo contacto
-router.post('/', contactsController.createContact);
+router.post('/', contactsController.createUser);
+
+router.put('/:id', contactsController.updateUser);
+
+router.delete('/:id', contactsController.deleteUser);
 
 module.exports = router;

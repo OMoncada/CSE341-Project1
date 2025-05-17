@@ -1,3 +1,32 @@
-//PRODUCTION ### get all contacts GET 
+### GET: Obtener todos los contactos
+GET http://localhost:3000/contacts
 
-### get contact by id GET 
+### GET: Obtener un contacto por ID
+GET http://localhost:3000/contacts/681eebd4eb2ae82891cc47c0
+
+### POST: Crear un nuevo contacto
+POST http://localhost:3000/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Noah",
+  "lastName": "Moncada",
+  "email": "NM007@example.com",
+  "favoriteColor": "blue",
+  "birthday": "1999-01-01"
+}
+
+### PUT: Actualizar un contacto
+PUT http://localhost:3000/contacts/681eebd4eb2ae82891cc47c0
+Content-Type: application/json
+
+{
+  "firstName": "Juan",
+  "lastName": "Perez",
+  "email": "juan.perez@example.com",
+  "favoriteColor": "green",
+  "birthday": "1992-05-10"
+}
+
+### DELETE: Eliminar un contacto
+DELETE http://localhost:3000/contacts/681eebd4eb2ae82891cc47c0
